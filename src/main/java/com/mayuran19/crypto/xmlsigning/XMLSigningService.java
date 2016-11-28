@@ -35,7 +35,7 @@ public class XMLSigningService {
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
         Document document = documentBuilder.parse(XMLSigningService.class.getClassLoader().getResourceAsStream("sample.xml"));
 
-        KeyPairGenerator kpg = KeyPairGenerator.getInstance("DSA");
+        KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
         kpg.initialize(512);
         KeyPair kp = kpg.generateKeyPair();
         XPath xpath = XPathFactory.newInstance().newXPath();
@@ -46,7 +46,7 @@ public class XMLSigningService {
 
         XMLSignatureFactory xmlSignatureFactory = XMLSignatureFactory.getInstance();
         Reference ref = xmlSignatureFactory.newReference
-                ("", xmlSignatureFactory.newDigestMethod(DigestMethod.SHA1, null),
+                ("", xmlSignatureFactory.newDigestMethod(DigestMethod.SHA256, null),
                         Collections.singletonList
                                 (xmlSignatureFactory.newTransform(Transform.ENVELOPED,
                                         (TransformParameterSpec) null)), null, null);
@@ -54,7 +54,7 @@ public class XMLSigningService {
                 (xmlSignatureFactory.newCanonicalizationMethod
                                 (CanonicalizationMethod.INCLUSIVE_WITH_COMMENTS,
                                         (C14NMethodParameterSpec) null),
-                        xmlSignatureFactory.newSignatureMethod(SignatureMethod.DSA_SHA1, null),
+                        xmlSignatureFactory.newSignatureMethod("http://www.w3.org/2001/04/xmldsig-more#rsa-sha256", null),
                         Collections.singletonList(ref));
         KeyInfoFactory kif = xmlSignatureFactory.getKeyInfoFactory();
         KeyValue kv = kif.newKeyValue(kp.getPublic());
